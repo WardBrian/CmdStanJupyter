@@ -1,20 +1,18 @@
-# jupyterstan
+# CmdStanJupyter
 
-`jupyterstan` is a package to help development of Stan models (using `pystan`)
+`CmdStanJupyter` is a package to help development of Stan models (using `CmdStanPy`)
 in jupyter notebooks.
 
 The package is heavily based on Arvinds-ds
-[stanmagic](https://github.com/Arvinds-ds/stanmagic) package, but provides an
-interface that simply returns a `pystan.Model` object.
+[jupyterstan](https://github.com/janfreyberg/jupyterstan) package, but provides an
+interface that simply returns a `cmdstanpy.CmdStanModel` object.
 
-In addition, it bundles Arvinds-ds `stan_code_helper` package to improve
-syntax highlighting for stan cells.
 
 ## Features
 
-- Stan language syntax highlighting in all cells beginning with `%%stan`
-- Compile a stan model and save it as a pystan variable by running a `%%stan` cell
-- No longer worry about `model_code`, reading in stan files, etc.
+- (**Forthcoming/broken**) Stan language syntax highlighting in all cells beginning with `%%stan`
+- Compile a stan model and save it as a cmdstanpy variable by running a `%%stan` cell
+- Display and load an existing stan file with `%stanfine`
 
 
 ## Installation
@@ -22,7 +20,7 @@ syntax highlighting for stan cells.
 To install the library:
 
 ```bash
-pip install jupyterstan
+pip install git+https://github.com/WardBrian/CmdStanJupyter.git
 ```
 
 ## Usage
@@ -30,12 +28,12 @@ pip install jupyterstan
 To use the `magic` in your notebook, you need to lead the extension:
 
 ```python
-%load_ext jupyterstan
+%load_ext cmdstanjupyter
 ```
 
 To define a stan model inside a jupyter notebook, start a cell with the `%%stan`
 magic. You can also provide a variable name, which is the variable name that
-the `pystan.Model` object will be assigned to. For example:
+the `cmdstanpy.CmdStanModel` object will be assigned to. For example:
 
 ```stan
 %%stan paris_female_births
@@ -53,13 +51,36 @@ model {
 }
 ```
 
-When you run this cell, `jupyterstan` will create a pystan Model object, which will compile your model and allow
-you to sample from it. To use your compiled model:
+When you run this cell, `cmdstanjupyter` will create a cmdstanpy CmdStanModel object, 
+which will compile your model and allow you to sample from it. 
+
+
+If the above code was stored in a file `births.stan`, the following is also possible:
+
+```
+%stanfile paris_female_births births.stan
+```
+
+```stan
+data {
+    int male;
+    int female;
+}
+
+parameters {
+    real<lower=0, upper=1> p;
+}
+
+model {
+    female ~ binomial(male + female, p);
+}
+```
+
+
+To use your compiled model:
 
 ```python
-fit = paris_female_births.sampling(
+fit = paris_female_births.sample(
     data={'male': 251527, 'female': 241945},
-    iter=1000,
-    chains=4
 )
 ```

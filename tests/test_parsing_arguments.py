@@ -1,6 +1,8 @@
 import pytest
 
-from jupyterstan import parse_args
+from cmdstanjupyter import parse_args
+
+# TODO
 
 DEFAULT_MODEL_NAME = "_stan_model"
 
