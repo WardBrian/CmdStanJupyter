@@ -2,7 +2,6 @@ import argparse
 import datetime
 import logging
 import os
-from re import M
 from typing import Dict, Tuple
 
 import cmdstanpy
@@ -11,11 +10,10 @@ import humanize
 from IPython.core.display import HTML
 from IPython.core.magic import Magics, cell_magic, line_magic, magics_class
 
-# from https://stackoverflow.com/questions/40085818/jupyter-notebook-output-cell-syntax-highlighting
 from IPython.display import Code, display
-from IPython.utils.capture import capture_output
 from pygments.formatters import HtmlFormatter
 
+# from https://stackoverflow.com/questions/40085818/jupyter-notebook-output-cell-syntax-highlighting
 formatter = HtmlFormatter()
 display(HTML(f'<style>{ formatter.get_style_defs(".highlight") }</style>'))
 
@@ -76,7 +74,7 @@ class StanMagics(Magics):
 
     def compile_stan_model(self, file, variable_name, stan_opts, cpp_opts):
         if not os.path.exists(file):
-            logger.error(f"File '%s' not found!", file)
+            logger.error("File '%s' not found!", file)
             return False
         else:
             logger.info(
