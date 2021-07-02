@@ -1,37 +1,64 @@
-import datetime
-import humanize
-from typing import Tuple, Dict
-
 import argparse
+import datetime
+import logging
 import os
+from re import M
+from typing import Dict, Tuple
 
-from IPython.core.magic import Magics, cell_magic, magics_class, line_magic
-
-from IPython.utils.capture import capture_output
+import cmdstanpy
+import cmdstanpy.compiler_opts as copts
+import humanize
+from IPython.core.display import HTML
+from IPython.core.magic import Magics, cell_magic, line_magic, magics_class
 
 # from https://stackoverflow.com/questions/40085818/jupyter-notebook-output-cell-syntax-highlighting
 from IPython.display import Code, display
-
+from IPython.utils.capture import capture_output
 from pygments.formatters import HtmlFormatter
-from IPython.core.display import HTML
 
 formatter = HtmlFormatter()
-
 display(HTML(f'<style>{ formatter.get_style_defs(".highlight") }</style>'))
 
-        
+logger = logging.getLogger("cmdstanjupyter")
 
-from cmdstanpy import CmdStanModel
 
 def parse_args(argstring: str) -> Tuple[str, Dict]:
     # users can separate arguments with commas and/or whitespace
     parser = argparse.ArgumentParser(description="Process cmdstanpy arguments.")
     parser.add_argument("variable_name", nargs="?", default="_stan_model")
-    # parser.add_argument("--model_name")
-    # TODO all stan/c++ args
-    kwargs = vars(parser.parse_args(argstring.split()))
 
-    variable_name = kwargs.pop("variable_name")
+    # stanc arguments
+    parser.add_argument("-O", action="store_true", default=None)
+    parser.add_argument("--allow_undefined", action="store_true", default=None)
+    parser.add_argument(
+        "--use-opencl", dest="use-opencl", action="store_true", default=None
+    )
+    parser.add_argument(
+        "--warn-unitialized",
+        dest="warn-uninitialized",
+        action="store_true",
+        default=None,
+    )
+    parser.add_argument("--include_paths", nargs="*")
+    parser.add_argument("--name")
+
+    # cpp args
+    parser.add_argument("--STAN_OPENCL", action="store_true", default=None)
+    parser.add_argument("--OPENCL_DEVICE_ID", type=int)
+    parser.add_argument("--OPENCL_PLATFORM_ID", type=int)
+    parser.add_argument("--STAN_MPI", action="store_true", default=None)
+    parser.add_argument("--STAN_THREADS", type=int)
+
+    raw_args = vars(parser.parse_args(argstring.split()))
+
+    stanc_args = {k: v for (k, v) in raw_args.items() if v is not None}
+
+    variable_name = stanc_args.pop("variable_name")
+
+    cpp_args = {}
+    for arg in copts.CPP_OPTS:
+        if arg in stanc_args:
+            cpp_args[arg] = stanc_args.pop(arg)
 
     if not variable_name.isidentifier():
         raise ValueError(
@@ -39,11 +66,7 @@ def parse_args(argstring: str) -> Tuple[str, Dict]:
             f"not a valid python variable name."
         )
 
-    # set defaults:
-    # if kwargs["model_name"] is None:
-    #     kwargs["model_name"] = variable_name
-
-    return variable_name, kwargs, {}
+    return variable_name, stanc_args, cpp_args
 
 
 @magics_class
@@ -51,37 +74,58 @@ class StanMagics(Magics):
     def __init__(self, shell):
         super(StanMagics, self).__init__(shell)
 
-    @line_magic
-    def stanfile(self, line):
-        # TODO parse better
-        model, file = line.split()
+    def compile_stan_model(self, file, variable_name, stan_opts, cpp_opts):
         if not os.path.exists(file):
-            print(f"File '{file}' not found!")
-            return
+            logger.error(f"File '%s' not found!", file)
+            return False
         else:
+            logger.info(
+                'Creating CmdStanPy model & assigning it to variable name "%s"',
+                variable_name,
+            )
             start = datetime.datetime.now()
             try:
-                with capture_output(display=False) as capture:
-                        _stan_model = CmdStanModel(stan_file=file)
+                _stan_model = cmdstanpy.CmdStanModel(
+                    stan_file=file,
+                    stanc_options=stan_opts,
+                    cpp_options=cpp_opts,
+                    logger=logger,
+                )
             except Exception:
-                print(f"Error creating Stan model:")
-                print(capture)
-                raise
+                logger.error("Failed to compile stan program")
+                return False
+
             end = datetime.datetime.now()
             delta = humanize.naturaldelta(end - start)
 
-            self.shell.user_ns[model] = _stan_model
-            display(Code(filename=file, language='stan'))
-            print(
-                f'Stan Model now available as variable "{model}"!\n'
-                f"Compilation took {delta}."
+            self.shell.user_ns[variable_name] = _stan_model
+            logger.info(
+                'StanModel now available as variable "%s"!\n Compilation took %s.',
+                variable_name,
+                delta,
             )
+            return True
+
+    @line_magic
+    def stanf(self, line):
+        """
+        Allow jupyter notebook cells create a CmdStanPy.CmdStanModel object
+        from a stan file specified in the magic %stanf. The CmdStanModel
+        gets assigned to a variable in the notebook's namespace, either
+        named _stan_model (the default), or a custom name (specified
+        by writing %stanf [file] <variable_name>).
+        """
+        file, line = line.split(maxsplit=1)
+        variable_name, stan_opts, cpp_opts = parse_args(line)
+
+        if self.compile_stan_model(file, variable_name, stan_opts, cpp_opts):
+            display(Code(filename=file, language="stan"))
 
     @cell_magic
     def stan(self, line, cell):
         """
-        Allow jupyter notebook cells create a CmdStanPy.CmdStanModel object from
-        Stan code in a cell that begins with %%stan. The CmdStanPy.CmdStanModel
+        Allow jupyter notebook cells create a CmdStanPy.CmdStanModel object
+        from Stan code in a cell that begins with %%stan. The CmdStanModel
         gets assigned to a variable in the notebook's namespace, either
         named _stan_model (the default), or a custom name (specified
         by writing %%stan <variable_name>).
@@ -89,36 +133,14 @@ class StanMagics(Magics):
 
         variable_name, stan_opts, cpp_opts = parse_args(line)
 
-        print(
-            f"Creating CmdStanPy model & assigning it to variable "
-            f'name "{variable_name}".'
-        )
-
-        if not os.path.exists('stan'):
-            os.mkdir('stan')
-        file = f'stan/{variable_name}.stan'
-        print(f"Writing model to: stan/{variable_name}.stan")
-        with open(file, 'w') as f:
+        if not os.path.exists("stan"):
+            os.mkdir("stan")
+        file = f"stan/{variable_name}.stan"
+        logger.info(f"Writing model to: stan/{variable_name}.stan")
+        with open(file, "w") as f:
             f.write(cell)
 
-        print(f"Stan options:\n", stan_opts)
-        print(f"C++ options:\n", cpp_opts)
-        start = datetime.datetime.now()
-        try:
-            with capture_output(display=False) as capture:
-                    _stan_model = CmdStanModel(stan_file=file, stanc_options=stan_opts, cpp_options=cpp_opts)
-        except Exception:
-            print(f"Error creating Stan model:")
-            print(capture)
-            raise
-        end = datetime.datetime.now()
-        delta = humanize.naturaldelta(end - start)
-
-        self.shell.user_ns[variable_name] = _stan_model
-        print(
-            f'StanModel now available as variable "{variable_name}"!\n'
-            f"Compilation took {delta}."
-        )
+        self.compile_stan_model(file, variable_name, stan_opts, cpp_opts)
 
 
 def load_ipython_extension(ipython):

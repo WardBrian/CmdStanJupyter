@@ -1,5 +1,0 @@
-{
-    "load_extensions": {
-        "stan_syntax/main": true
-    }
-}
