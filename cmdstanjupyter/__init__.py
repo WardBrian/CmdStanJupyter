@@ -20,7 +20,7 @@ display(HTML(f'<style>{ formatter.get_style_defs(".highlight") }</style>'))
 logger = logging.getLogger("cmdstanjupyter")
 
 
-def parse_args(argstring: str) -> Tuple[str, Dict]:
+def parse_args(argstring: str) -> Tuple[str, Dict, Dict]:
     # users can separate arguments with commas and/or whitespace
     parser = argparse.ArgumentParser(description="Process cmdstanpy arguments.")
     parser.add_argument("variable_name", nargs="?", default="_stan_model")
@@ -32,7 +32,7 @@ def parse_args(argstring: str) -> Tuple[str, Dict]:
         "--use-opencl", dest="use-opencl", action="store_true", default=None
     )
     parser.add_argument(
-        "--warn-unitialized",
+        "--warn-uninitialized",
         dest="warn-uninitialized",
         action="store_true",
         default=None,
