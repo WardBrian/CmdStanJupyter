@@ -24,7 +24,10 @@ def test_model_name():
 
 
 def test_stan_options():
-    in_str = "model -O --allow_undefined --use-opencl --warn-uninitialized --name TEST"
+    in_str = (
+        "model -O --allow_undefined --use-opencl --warn-uninitialized"
+        + " --name TEST --warn-pedantic"
+    )
 
     varname, sopts, cppopts = parse_args(in_str)
     test_opts = {
@@ -32,6 +35,7 @@ def test_stan_options():
         "allow_undefined": True,
         "use-opencl": True,
         "warn-uninitialized": True,
+        "warn-pedantic": True,
         "name": "TEST",
     }
     assert varname == "model"
@@ -40,7 +44,10 @@ def test_stan_options():
 
 
 def test_cpp_options():
-    in_str = "model --STAN_OPENCL --OPENCL_DEVICE_ID 99 --OPENCL_PLATFORM_ID 101 --STAN_MPI --STAN_THREADS 4"
+    in_str = (
+        "model --STAN_OPENCL --OPENCL_DEVICE_ID 99"
+        + " --OPENCL_PLATFORM_ID 101 --STAN_MPI --STAN_THREADS 4"
+    )
 
     varname, sopts, cppopts = parse_args(in_str)
     test_opts = {

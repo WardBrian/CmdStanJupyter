@@ -22,7 +22,7 @@ logger = logging.getLogger("cmdstanjupyter")
 
 def parse_args(argstring: str) -> Tuple[str, Dict, Dict]:
     # users can separate arguments with commas and/or whitespace
-    parser = argparse.ArgumentParser(description="Process cmdstanpy arguments.")
+    parser = argparse.ArgumentParser(description="Process cmdstanpy arguments")
     parser.add_argument("variable_name", nargs="?", default="_stan_model")
 
     # stanc arguments
@@ -34,6 +34,12 @@ def parse_args(argstring: str) -> Tuple[str, Dict, Dict]:
     parser.add_argument(
         "--warn-uninitialized",
         dest="warn-uninitialized",
+        action="store_true",
+        default=None,
+    )
+    parser.add_argument(
+        "--warn-pedantic",
+        dest="warn-pedantic",
         action="store_true",
         default=None,
     )
@@ -78,7 +84,7 @@ class StanMagics(Magics):
             return False
         else:
             logger.info(
-                'Creating CmdStanPy model & assigning it to variable name "%s"',
+                'Creating CmdStanPy model & assigning it to variable "%s"',
                 variable_name,
             )
             start = datetime.datetime.now()
@@ -98,7 +104,10 @@ class StanMagics(Magics):
 
             self.shell.user_ns[variable_name] = _stan_model
             logger.info(
-                'StanModel now available as variable "%s"!\n Compilation took %s.',
+                (
+                    'StanModel now available as variable "%s"!'
+                    + "\n Compilation took %s."
+                ),
                 variable_name,
                 delta,
             )
