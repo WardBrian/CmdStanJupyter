@@ -19,6 +19,8 @@ display(HTML(f'<style>{ formatter.get_style_defs(".highlight") }</style>'))
 
 logger = logging.getLogger("cmdstanjupyter")
 
+STAN_FOLDER = ".stan"
+
 
 def parse_args(argstring: str) -> Tuple[str, Dict, Dict]:
     # users can separate arguments with commas and/or whitespace
@@ -140,10 +142,10 @@ class StanMagics(Magics):
 
         variable_name, stan_opts, cpp_opts = parse_args(line)
 
-        if not os.path.exists("stan"):
-            os.mkdir("stan")
-        file = f"stan/{variable_name}.stan"
-        logger.info(f"Writing model to: stan/{variable_name}.stan")
+        if not os.path.exists(STAN_FOLDER):
+            os.mkdir(STAN_FOLDER)
+        file = f"{STAN_FOLDER}/{variable_name}.stan"
+        logger.info(f"Writing model to: {STAN_FOLDER}/{variable_name}.stan")
         with open(file, "w") as f:
             f.write(cell)
 
