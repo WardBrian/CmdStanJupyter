@@ -19,6 +19,8 @@ display(HTML(f'<style>{ formatter.get_style_defs(".highlight") }</style>'))
 
 logger = logging.getLogger("cmdstanjupyter")
 
+logging.basicConfig(level=logging.INFO)
+
 STAN_FOLDER = ".stan"
 
 
@@ -95,7 +97,6 @@ class StanMagics(Magics):
                     stan_file=file,
                     stanc_options=stan_opts,
                     cpp_options=cpp_opts,
-                    logger=logger,
                 )
             except Exception:
                 logger.error("Failed to compile stan program")
@@ -157,5 +158,4 @@ def load_ipython_extension(ipython):
 
 
 def unload_ipython_extension(ipython):
-    # ipython.user_global_ns.pop('_stan_vars', None)
     pass
