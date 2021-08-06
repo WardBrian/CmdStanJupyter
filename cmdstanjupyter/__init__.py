@@ -59,14 +59,14 @@ def parse_args(argstring: str) -> Tuple[str, Dict, Dict]:
 
     raw_args = vars(parser.parse_args(argstring.split()))
 
-    stanc_args = {k: v for (k, v) in raw_args.items() if v is not None}
+    cpp_args = {k: v for (k, v) in raw_args.items() if v is not None}
 
-    variable_name = stanc_args.pop("variable_name")
+    variable_name = cpp_args.pop("variable_name")
 
-    cpp_args = {}
-    for arg in copts.CPP_OPTS:
-        if arg in stanc_args:
-            cpp_args[arg] = stanc_args.pop(arg)
+    stanc_args = {}
+    for arg in copts.STANC_OPTS:
+        if arg in cpp_args:
+            stanc_args[arg] = cpp_args.pop(arg)
 
     if not variable_name.isidentifier():
         raise ValueError(
