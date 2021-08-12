@@ -146,9 +146,19 @@ class StanMagics(Magics):
         if not os.path.exists(STAN_FOLDER):
             os.mkdir(STAN_FOLDER)
         file = f"{STAN_FOLDER}/{variable_name}.stan"
-        logger.info(f"Writing model to: {STAN_FOLDER}/{variable_name}.stan")
-        with open(file, "w") as f:
-            f.write(cell)
+
+        skip = False
+        if os.path.exists(file):
+            # don't overwrite existing if it's the same, saves comp time
+            with open(file, "r") as f:
+                if f.read() == cell:
+                    logger.info(f"Reusing cached model file {file}")
+                    skip = True
+
+        if not skip:
+            logger.info(f"Writing model to {file}")
+            with open(file, "w") as f:
+                f.write(cell)
 
         self.compile_stan_model(file, variable_name, stan_opts, cpp_opts)
 
