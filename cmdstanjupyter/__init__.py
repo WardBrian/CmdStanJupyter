@@ -7,15 +7,30 @@ from typing import Dict, Tuple
 import cmdstanpy
 import cmdstanpy.compiler_opts as copts
 import humanize
-from IPython.core.display import HTML
+import IPython
 from IPython.core.magic import Magics, cell_magic, line_magic, magics_class
 
-from IPython.display import Code, display
-from pygments.formatters import HtmlFormatter
 
-# from https://stackoverflow.com/questions/40085818/jupyter-notebook-output-cell-syntax-highlighting
-formatter = HtmlFormatter()
-display(HTML(f'<style>{ formatter.get_style_defs(".highlight") }</style>'))
+# from https://github.com/ipython/ipython/issues/11747#issuecomment-528694702
+def display_source(file):
+    def _jupyterlab_repr_html_(self):
+        from pygments import highlight
+        from pygments.formatters import HtmlFormatter
+
+        fmt = HtmlFormatter()
+        style = "<style>{}\n{}</style>".format(
+            fmt.get_style_defs(".output_html"),
+            fmt.get_style_defs(".jp-RenderedHTML"),
+        )
+        return style + highlight(self.data, self._get_lexer(), fmt)
+
+    # Replace _repr_html_ with our own version that adds the 'jp-RenderedHTML'
+    # class in addition to 'output_html'
+    IPython.display.Code._repr_html_ = _jupyterlab_repr_html_
+    return IPython.display.display(
+        IPython.display.Code(filename=file, language="stan"),
+    )
+
 
 logger = logging.getLogger("cmdstanjupyter")
 
@@ -129,7 +144,7 @@ class StanMagics(Magics):
         variable_name, stan_opts, cpp_opts = parse_args(line)
 
         if self.compile_stan_model(file, variable_name, stan_opts, cpp_opts):
-            display(Code(filename=file, language="stan"))
+            display_source(file)
 
     @cell_magic
     def stan(self, line, cell):

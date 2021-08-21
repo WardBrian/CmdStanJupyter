@@ -3,6 +3,10 @@
 `CmdStanJupyter` is a package to help development of Stan models (using `CmdStanPy`)
 in jupyter notebooks.
 
+
+Use it with [jupyterlab-stan-highlight](https://github.com/WardBrian/jupyterlab-stan-highlight) to recieve
+highlighting for your `%%stan` blocks in python notebooks!
+
 The package is heavily based on Arvinds-ds
 [jupyterstan](https://github.com/janfreyberg/jupyterstan) package, but provides an
 interface that simply returns a `cmdstanpy.CmdStanModel` object.
@@ -10,9 +14,8 @@ interface that simply returns a `cmdstanpy.CmdStanModel` object.
 
 ## Features
 
-- (**Forthcoming/broken**) Stan language syntax highlighting in all cells beginning with `%%stan`
 - Compile a stan model and save it as a cmdstanpy variable by running a `%%stan` cell
-- Display and load an existing stan file with `%stanfine`
+- Display and load an existing stan file with `%stanf`
 
 
 ## Installation

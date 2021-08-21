@@ -2,7 +2,6 @@ import pytest
 
 from cmdstanjupyter import parse_args
 
-
 DEFAULT_MODEL_NAME = "_stan_model"
 
 DEFAULT_OPTS = {}
