@@ -23,7 +23,16 @@ interface that simply returns a `cmdstanpy.CmdStanModel` object.
 To install the library:
 
 ```bash
-pip install git+https://github.com/WardBrian/CmdStanJupyter.git
+pip install cmdstanjupyter
+```
+
+This does not install cmdstanpy by default, as the 
+[recommended installation](https://cmdstanpy.readthedocs.io/en/v0.9.77/installation.html#conda-users-recommended) 
+for that package is via conda. If you want to install cmdstanpy via pip alongside
+this package, use
+
+```bash
+pip install cmdstanjupyter[all]
 ```
 
 ## Usage
@@ -61,7 +70,7 @@ which will compile your model and allow you to sample from it.
 If the above code was stored in a file `births.stan`, the following is also possible:
 
 ```
-%stanfile paris_female_births births.stan
+%stanf paris_female_births births.stan
 ```
 
 ```stan

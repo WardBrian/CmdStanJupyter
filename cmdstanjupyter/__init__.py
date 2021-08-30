@@ -140,7 +140,10 @@ class StanMagics(Magics):
         named _stan_model (the default), or a custom name (specified
         by writing %stanf [file] <variable_name>).
         """
-        file, line = line.split(maxsplit=1)
+        try:
+            file, line = line.split(maxsplit=1)
+        except ValueError:
+            raise RuntimeError("Failed to parse stanf, did you include the file name?")
         variable_name, stan_opts, cpp_opts = parse_args(line)
 
         if self.compile_stan_model(file, variable_name, stan_opts, cpp_opts):
