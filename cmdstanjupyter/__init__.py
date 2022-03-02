@@ -34,7 +34,14 @@ def display_source(file):
 
 logger = logging.getLogger("cmdstanjupyter")
 
-logging.basicConfig(level=logging.INFO)
+if len(logger.handlers) == 0:
+    # send all messages to handlers
+    logger.setLevel(logging.DEBUG)
+    # add a default handler to the logger to INFO and higher
+    handler = logging.StreamHandler()
+    handler.setLevel(logging.INFO)
+    handler.setFormatter(logging.Formatter(logging.BASIC_FORMAT))
+    logger.addHandler(handler)
 
 STAN_FOLDER = ".stan"
 
