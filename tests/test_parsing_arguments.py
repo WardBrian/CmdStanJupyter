@@ -24,14 +24,14 @@ def test_model_name():
 
 def test_stan_options():
     in_str = (
-        "model -O --allow_undefined --use-opencl --warn-uninitialized"
+        "model --O1 --allow-undefined --use-opencl --warn-uninitialized"
         + " --name TEST --warn-pedantic"
     )
 
     varname, sopts, cppopts = parse_args(in_str)
     test_opts = {
-        "O": True,
-        "allow_undefined": True,
+        "O1": True,
+        "allow-undefined": True,
         "use-opencl": True,
         "warn-uninitialized": True,
         "warn-pedantic": True,

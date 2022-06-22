@@ -10,6 +10,9 @@ import humanize
 import IPython
 from IPython.core.magic import Magics, cell_magic, line_magic, magics_class
 
+from IPython.core.magic_arguments import argument
+from IPython.core.magic_arguments import magic_arguments
+from IPython.core.magic_arguments import parse_argstring
 
 # from https://github.com/ipython/ipython/issues/11747#issuecomment-528694702
 def display_source(file):
@@ -46,40 +49,92 @@ if len(logger.handlers) == 0:
 STAN_FOLDER = ".stan"
 
 
+MAGIC_ARGS_PARSER = argparse.ArgumentParser(
+    usage="You can also pass additional "
+    "arguments to this magic which are forwarded to cmdstanpy:",
+    add_help=False,
+)
+MAGIC_ARGS_PARSER.add_argument(
+    "variable_name", nargs="?", default="_stan_model", help=argparse.SUPPRESS
+)
+
+# stanc arguments
+MAGIC_ARGS_PARSER.add_argument(
+    "--O0",
+    action="store_true",
+    default=None,
+    help="Disable all Stan compiler optimizations. This is the default option",
+)
+MAGIC_ARGS_PARSER.add_argument(
+    "--O1",
+    action="store_true",
+    default=None,
+    help="Enable basic Stan compiler optimizations",
+)
+MAGIC_ARGS_PARSER.add_argument(
+    "-Oexperimental",
+    "--O",
+    action="store_true",
+    default=None,
+    help="Enable all optimizations. Not recommended",
+)
+MAGIC_ARGS_PARSER.add_argument(
+    "--allow-undefined",
+    dest="allow-undefined",
+    action="store_true",
+    default=None,
+    help="Allow functions which are declared but not defined in the model",
+)
+MAGIC_ARGS_PARSER.add_argument(
+    "--use-opencl",
+    dest="use-opencl",
+    action="store_true",
+    default=None,
+    help="Enable OpenCL specific Stan optimizations",
+)
+MAGIC_ARGS_PARSER.add_argument(
+    "--warn-uninitialized",
+    dest="warn-uninitialized",
+    action="store_true",
+    default=None,
+    help="Produce warnings for uninitialized variables. Experimental",
+)
+MAGIC_ARGS_PARSER.add_argument(
+    "--warn-pedantic",
+    dest="warn-pedantic",
+    action="store_true",
+    default=None,
+    help="Produce warnings for common modeling errors. Experimental",
+)
+MAGIC_ARGS_PARSER.add_argument(
+    "--include-paths", nargs="*", help="Paths to look for #include files"
+)
+MAGIC_ARGS_PARSER.add_argument("--name")
+
+# cpp args
+MAGIC_ARGS_PARSER.add_argument(
+    "--STAN_OPENCL",
+    action="store_true",
+    default=None,
+    help="Enable Stan OpenCL optimizations in CmdStan",
+)
+MAGIC_ARGS_PARSER.add_argument("--OPENCL_DEVICE_ID", type=int)
+MAGIC_ARGS_PARSER.add_argument("--OPENCL_PLATFORM_ID", type=int)
+MAGIC_ARGS_PARSER.add_argument(
+    "--STAN_MPI",
+    action="store_true",
+    default=None,
+    help="Enable Stan to use MPI in CmdStan",
+)
+MAGIC_ARGS_PARSER.add_argument(
+    "--STAN_THREADS", type=int, help="Enable threading in CmdStan"
+)
+
+
 def parse_args(argstring: str) -> Tuple[str, Dict, Dict]:
     # users can separate arguments with commas and/or whitespace
-    parser = argparse.ArgumentParser(description="Process cmdstanpy arguments")
-    parser.add_argument("variable_name", nargs="?", default="_stan_model")
 
-    # stanc arguments
-    parser.add_argument("-O", action="store_true", default=None)
-    parser.add_argument("--allow_undefined", action="store_true", default=None)
-    parser.add_argument(
-        "--use-opencl", dest="use-opencl", action="store_true", default=None
-    )
-    parser.add_argument(
-        "--warn-uninitialized",
-        dest="warn-uninitialized",
-        action="store_true",
-        default=None,
-    )
-    parser.add_argument(
-        "--warn-pedantic",
-        dest="warn-pedantic",
-        action="store_true",
-        default=None,
-    )
-    parser.add_argument("--include_paths", nargs="*")
-    parser.add_argument("--name")
-
-    # cpp args
-    parser.add_argument("--STAN_OPENCL", action="store_true", default=None)
-    parser.add_argument("--OPENCL_DEVICE_ID", type=int)
-    parser.add_argument("--OPENCL_PLATFORM_ID", type=int)
-    parser.add_argument("--STAN_MPI", action="store_true", default=None)
-    parser.add_argument("--STAN_THREADS", type=int)
-
-    raw_args = vars(parser.parse_args(argstring.split()))
+    raw_args = vars(MAGIC_ARGS_PARSER.parse_args(argstring.split()))
 
     cpp_args = {k: v for (k, v) in raw_args.items() if v is not None}
 
@@ -186,6 +241,9 @@ class StanMagics(Magics):
                 f.write(cell)
 
         self.compile_stan_model(file, variable_name, stan_opts, cpp_opts)
+
+    stanf.__doc__ = stanf.__doc__ + "\n" + MAGIC_ARGS_PARSER.format_help()
+    stan.__doc__ = stan.__doc__ + "\n" + MAGIC_ARGS_PARSER.format_help()
 
 
 def load_ipython_extension(ipython):
