@@ -39,6 +39,7 @@ logger = logging.getLogger("cmdstanjupyter")
 
 if len(logger.handlers) == 0:
     # send all messages to handlers
+    logger.propagate = False
     logger.setLevel(logging.DEBUG)
     # add a default handler to the logger to INFO and higher
     handler = logging.StreamHandler()
