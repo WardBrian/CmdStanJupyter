@@ -233,11 +233,11 @@ class StanMagics(Magics):
             # don't overwrite existing if it's the same, saves comp time
             with open(file, "r") as f:
                 if f.read() == cell:
-                    logger.info(f"Reusing cached model file {file}")
+                    logger.debug(f"Reusing cached model file {file}")
                     skip = True
 
         if not skip:
-            logger.info(f"Writing model to {file}")
+            logger.debug(f"Writing model to {file}")
             with open(file, "w") as f:
                 f.write(cell)
 
