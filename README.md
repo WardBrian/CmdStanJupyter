@@ -1,98 +1,77 @@
-# CmdStanJupyter
+# cmdstanjupyter
 
-`CmdStanJupyter` is a package to help development of Stan models (using `CmdStanPy`)
-in jupyter notebooks.
+[![Github Actions Status](https://github.com/WardBrian/CmdStanJupyter/workflows/Build/badge.svg)](https://github.com/WardBrian/CmdStanJupyter/actions/workflows/build.yml)
 
+A JupyterLab extension for Stan models.
 
-Use it with [jupyterlab-stan-highlight](https://github.com/WardBrian/jupyterlab-stan-highlight) to recieve
-highlighting for your `%%stan` blocks in python notebooks!
+## Requirements
 
-The package is heavily based on Arvinds-ds
-[jupyterstan](https://github.com/janfreyberg/jupyterstan) package, but provides an
-interface that simply returns a `cmdstanpy.CmdStanModel` object.
+- JupyterLab >= 4.0.0
 
+## Install
 
-## Features
-
-- Compile a stan model and save it as a cmdstanpy variable by running a `%%stan` cell
-- Display and load an existing stan file with `%stanf`
-
-
-## Installation
-
-To install the library:
+To install the extension, execute:
 
 ```bash
 pip install cmdstanjupyter
 ```
 
-This does not install cmdstanpy by default, as the 
-[recommended installation](https://cmdstanpy.readthedocs.io/en/v0.9.77/installation.html#conda-users-recommended) 
-for that package is via conda. If you want to install cmdstanpy via pip alongside
-this package, use
+## Uninstall
+
+To remove the extension, execute:
 
 ```bash
-pip install cmdstanjupyter[all]
+pip uninstall cmdstanjupyter
 ```
 
-## Usage
+## Contributing
 
-To use the `magic` in your notebook, you need to lead the extension:
+### Development install
 
-```python
-%load_ext cmdstanjupyter
+Note: You will need NodeJS to build the extension package.
+
+The `jlpm` command is JupyterLab's pinned version of
+[yarn](https://yarnpkg.com/) that is installed with JupyterLab. You may use
+`yarn` or `npm` in lieu of `jlpm` below.
+
+```bash
+# Clone the repo to your local environment
+# Change directory to the cmdstanjupyter directory
+# Install package in development mode
+pip install -e "."
+# Link your development version of the extension with JupyterLab
+jupyter labextension develop . --overwrite
+# Rebuild extension Typescript source after making changes
+jlpm build
 ```
 
-To define a stan model inside a jupyter notebook, start a cell with the `%%stan`
-magic. You can also provide a variable name, which is the variable name that
-the `cmdstanpy.CmdStanModel` object will be assigned to. For example:
+You can watch the source directory and run JupyterLab at the same time in different terminals to watch for changes in the extension's source and automatically rebuild the extension.
 
-```stan
-%%stan paris_female_births
-data {
-    int male;
-    int female;
-}
-
-parameters {
-    real<lower=0, upper=1> p;
-}
-
-model {
-    female ~ binomial(male + female, p);
-}
+```bash
+# Watch the source directory in one terminal, automatically rebuilding when needed
+jlpm watch
+# Run JupyterLab in another terminal
+jupyter lab
 ```
 
-When you run this cell, `cmdstanjupyter` will create a cmdstanpy CmdStanModel object, 
-which will compile your model and allow you to sample from it. 
+With the watch command running, every saved change will immediately be built locally and available in your running JupyterLab. Refresh JupyterLab to load the change in your browser (you may need to wait several seconds for the extension to be rebuilt).
 
+By default, the `jlpm build` command generates the source maps for this extension to make it easier to debug using the browser dev tools. To also generate source maps for the JupyterLab core extensions, you can run the following command:
 
-If the above code was stored in a file `births.stan`, the following is also possible:
-
-```
-%stanf paris_female_births births.stan
+```bash
+jupyter lab build --minimize=False
 ```
 
-```stan
-data {
-    int male;
-    int female;
-}
+### Development uninstall
 
-parameters {
-    real<lower=0, upper=1> p;
-}
-
-model {
-    female ~ binomial(male + female, p);
-}
+```bash
+pip uninstall cmdstanjupyter
 ```
 
+In development mode, you will also need to remove the symlink created by `jupyter labextension develop`
+command. To find its location, you can run `jupyter labextension list` to figure out where the `labextensions`
+folder is located. Then you can remove the symlink named `cmdstanjupyter` within that folder.
 
-To use your compiled model:
+### Packaging the extension
 
-```python
-fit = paris_female_births.sample(
-    data={'male': 251527, 'female': 241945},
-)
-```
+See [RELEASE](RELEASE.md)
