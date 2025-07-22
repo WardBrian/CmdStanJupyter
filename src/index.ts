@@ -9,11 +9,9 @@ import { Cell, CodeCell } from '@jupyterlab/cells';
 import { stanLanguage } from './stan';
 
 function highlightStanCell(cell: Cell | null): void {
-  console.log('highlightStanCell', cell);
   if (cell instanceof CodeCell) {
     const contents = cell.model.sharedModel.getSource();
     if (contents.trim().startsWith('%%stan')) {
-      console.log('highlighting cell as stan');
       cell.model.mimeType = 'text/x-stan';
     }
   }
