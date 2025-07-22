@@ -26,10 +26,6 @@ import humanize
 import IPython
 from IPython.core.magic import Magics, cell_magic, line_magic, magics_class
 
-from IPython.core.magic_arguments import argument
-from IPython.core.magic_arguments import magic_arguments
-from IPython.core.magic_arguments import parse_argstring
-
 
 # from https://github.com/ipython/ipython/issues/11747#issuecomment-528694702
 def display_source(file):
