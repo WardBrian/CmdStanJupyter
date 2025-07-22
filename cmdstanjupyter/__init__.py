@@ -139,7 +139,10 @@ MAGIC_ARGS_PARSER.add_argument(
     help="Enable Stan to use MPI in CmdStan",
 )
 MAGIC_ARGS_PARSER.add_argument(
-    "--STAN_THREADS", type=int, help="Enable threading in CmdStan"
+    "--STAN_THREADS",
+    action="store_true",
+    default=None,
+    help="Enable threading in CmdStan",
 )
 
 

@@ -22,8 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
-dependencies = [
-]
+dependencies = ["humanize"]
 dynamic = ["version", "description", "authors", "urls", "keywords"]
 
 [tool.hatch.version]
@@ -50,10 +49,8 @@ path = "cmdstanjupyter/_version.py"
 dependencies = ["hatch-jupyter-builder>=0.5"]
 build-function = "hatch_jupyter_builder.npm_builder"
 ensured-targets = [
-    "cmdstanjupyter/labextension/static/style.js",
     "cmdstanjupyter/labextension/package.json",
 ]
-skip-if-exists = ["cmdstanjupyter/labextension/static/style.js"]
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]
 build_cmd = "build:prod"
