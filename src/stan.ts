@@ -30,7 +30,7 @@ const stanSimpleMode = simpleMode({
     //types
     {
       regex:
-        /(\b)((int|real|data|complex|array|tuple|vector|simplex|unit_vector|sum_to_zero_vector|ordered|positive_ordered|row_vector|matrix|complex_vector|complex_matrix|complex_row_vector|corr_matrix|cov_matrix|cholesky_factor_cov|cholesky_factor_corr|column_stochastic_matrix|row_stochastic_matrix|void)(\b)/,
+        /(\b)(int|real|data|complex|array|tuple|vector|simplex|unit_vector|sum_to_zero_vector|ordered|positive_ordered|row_vector|matrix|complex_vector|complex_matrix|complex_row_vector|corr_matrix|cov_matrix|cholesky_factor_cov|cholesky_factor_corr|column_stochastic_matrix|row_stochastic_matrix|void)(\b)/,
       token: ['', 'def', '']
     },
     {
