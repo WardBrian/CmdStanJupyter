@@ -116,7 +116,7 @@ const stanSimpleMode = simpleMode({
       dedent: true
     },
     // punctuation
-    { regex: /(\;|\||,)/, token: 'punctuation' }
+    { regex: /(;|\||,)/, token: 'punctuation' }
   ],
 
   include: [

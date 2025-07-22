@@ -45,7 +45,7 @@ def test_stan_options():
 def test_cpp_options():
     in_str = (
         "model --STAN_OPENCL --OPENCL_DEVICE_ID 99"
-        + " --OPENCL_PLATFORM_ID 101 --STAN_MPI --STAN_THREADS 4"
+        + " --OPENCL_PLATFORM_ID 101 --STAN_MPI --STAN_THREADS"
     )
 
     varname, sopts, cppopts = parse_args(in_str)
@@ -54,7 +54,7 @@ def test_cpp_options():
         "OPENCL_DEVICE_ID": 99,
         "OPENCL_PLATFORM_ID": 101,
         "STAN_MPI": True,
-        "STAN_THREADS": 4,
+        "STAN_THREADS": True,
     }
     assert varname == "model"
     assert sopts == DEFAULT_OPTS
