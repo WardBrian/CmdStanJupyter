@@ -1,3 +1,19 @@
+try:
+    from ._version import __version__
+except ImportError:
+    # Fallback when using the package in dev mode without installing
+    # in editable mode with pip. It is highly recommended to install
+    # the package from a stable release or in editable mode: https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs
+    import warnings
+
+    warnings.warn("Importing 'cmdstanjupyter' outside a proper installation.")
+    __version__ = "dev"
+
+
+def _jupyter_labextension_paths():
+    return [{"src": "labextension", "dest": "cmdstanjupyter"}]
+
+
 import argparse
 import datetime
 import logging
@@ -5,14 +21,11 @@ import os
 from typing import Dict, Tuple
 
 import cmdstanpy
-import cmdstanpy.compiler_opts as copts
+import cmdstanpy.compilation as copts
 import humanize
 import IPython
 from IPython.core.magic import Magics, cell_magic, line_magic, magics_class
 
-from IPython.core.magic_arguments import argument
-from IPython.core.magic_arguments import magic_arguments
-from IPython.core.magic_arguments import parse_argstring
 
 # from https://github.com/ipython/ipython/issues/11747#issuecomment-528694702
 def display_source(file):
@@ -68,16 +81,10 @@ MAGIC_ARGS_PARSER.add_argument(
 )
 MAGIC_ARGS_PARSER.add_argument(
     "--O1",
-    action="store_true",
-    default=None,
-    help="Enable basic Stan compiler optimizations",
-)
-MAGIC_ARGS_PARSER.add_argument(
-    "-Oexperimental",
     "--O",
     action="store_true",
     default=None,
-    help="Enable all optimizations. Not recommended",
+    help="Enable basic Stan compiler optimizations",
 )
 MAGIC_ARGS_PARSER.add_argument(
     "--allow-undefined",
@@ -128,7 +135,10 @@ MAGIC_ARGS_PARSER.add_argument(
     help="Enable Stan to use MPI in CmdStan",
 )
 MAGIC_ARGS_PARSER.add_argument(
-    "--STAN_THREADS", type=int, help="Enable threading in CmdStan"
+    "--STAN_THREADS",
+    action="store_true",
+    default=None,
+    help="Enable threading in CmdStan",
 )
 
 

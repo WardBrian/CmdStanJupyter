@@ -1,41 +1,30 @@
-# CmdStanJupyter
+# cmdstanjupyter
 
-`CmdStanJupyter` is a package to help development of Stan models (using `CmdStanPy`)
-in jupyter notebooks.
+[![Github Actions Status](https://github.com/WardBrian/CmdStanJupyter/workflows/Build/badge.svg)](https://github.com/WardBrian/CmdStanJupyter/actions/workflows/build.yml)
 
+This extension provides syntax highlighting for Stan code in JupyterLab, as well as a `%%stan` magic command
+to define Stan models in Jupyter notebooks and build them with [CmdStanPy](https://github.com/stan-dev/cmdstanpy).
 
-Use it with [jupyterlab-stan-highlight](https://github.com/WardBrian/jupyterlab-stan-highlight) to recieve
-highlighting for your `%%stan` blocks in python notebooks!
+## Requirements
 
-The package is heavily based on Arvinds-ds
-[jupyterstan](https://github.com/janfreyberg/jupyterstan) package, but provides an
-interface that simply returns a `cmdstanpy.CmdStanModel` object.
+- JupyterLab >= 4.0.0
 
+## Install
 
-## Features
-
-- Compile a stan model and save it as a cmdstanpy variable by running a `%%stan` cell
-- Display and load an existing stan file with `%stanf`
-
-
-## Installation
-
-To install the library:
+To install the extension, execute:
 
 ```bash
 pip install cmdstanjupyter
 ```
 
-This does not install cmdstanpy by default, as the 
-[recommended installation](https://cmdstanpy.readthedocs.io/en/v0.9.77/installation.html#conda-users-recommended) 
-for that package is via conda. If you want to install cmdstanpy via pip alongside
-this package, use
+**Note**: this does _not_ install [CmdStanPy](https://github.com/stan-dev/cmdstanpy) for you, in case you are only interested
+in Stan syntax highlighting and not the `%%stan` magic!
 
-```bash
-pip install cmdstanjupyter[all]
-```
+Install it separately using `pip` or `conda`!
 
 ## Usage
+
+<img width="400" alt="Screenshot of a notebook with Stan highlighting" src="https://github.com/user-attachments/assets/3b59f347-515a-4d30-a1cc-d7de1707c799" />
 
 To use the `magic` in your notebook, you need to lead the extension:
 
@@ -63,31 +52,14 @@ model {
 }
 ```
 
-When you run this cell, `cmdstanjupyter` will create a cmdstanpy CmdStanModel object, 
-which will compile your model and allow you to sample from it. 
+When you run this cell, `cmdstanjupyter` will create a cmdstanpy CmdStanModel object,
+which will compile your model and allow you to sample from it.
 
-
-If the above code was stored in a file `births.stan`, the following is also possible:
+If the above code was stored in a file `births.stan`, the following is equivalent:
 
 ```
-%stanf paris_female_births births.stan
+%stanf births.stan paris_female_births
 ```
-
-```stan
-data {
-    int male;
-    int female;
-}
-
-parameters {
-    real<lower=0, upper=1> p;
-}
-
-model {
-    female ~ binomial(male + female, p);
-}
-```
-
 
 To use your compiled model:
 
@@ -96,3 +68,8 @@ fit = paris_female_births.sample(
     data={'male': 251527, 'female': 241945},
 )
 ```
+
+## Credits
+
+The %magic is heavily based on the previous [jupyterstan](https://github.com/janfreyberg/jupyterstan) package.
+The highlighting code is inspired by [jupyterlab-stata-highlight](https://github.com/kylebarron/jupyterlab-stata-highlight).

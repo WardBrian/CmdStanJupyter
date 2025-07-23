@@ -1,20 +1,30 @@
+*.bundle.*
+lib/
+node_modules/
+*.log
+.eslintcache
+.stylelintcache
+*.egg-info/
+.ipynb_checkpoints
+*.tsbuildinfo
+cmdstanjupyter/labextension
+# Version file is handled by hatchling
+cmdstanjupyter/_version.py
+
+# Created by https://www.gitignore.io/api/python
+# Edit at https://www.gitignore.io/?templates=python
+
 ### Python ###
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
-.stan
-
-.pytest_cache/
-
-.DS_Store
 
 # C extensions
 *.so
-.ipynb_checkpoints/
+
 # Distribution / packaging
 .Python
-env/
 build/
 develop-eggs/
 dist/
@@ -26,9 +36,12 @@ lib64/
 parts/
 sdist/
 var/
-*.egg-info/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
 .installed.cfg
 *.egg
+MANIFEST
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -43,17 +56,23 @@ pip-delete-this-directory.txt
 # Unit test / coverage reports
 htmlcov/
 .tox/
+.nox/
 .coverage
 .coverage.*
 .cache
 nosetests.xml
+coverage/
 coverage.xml
-*,cover
+*.cover
 .hypothesis/
+.pytest_cache/
 
 # Translations
 *.mo
 *.pot
+
+# Scrapy stuff:
+.scrapy
 
 # Sphinx documentation
 docs/_build/
@@ -61,33 +80,44 @@ docs/_build/
 # PyBuilder
 target/
 
+# pyenv
+.python-version
 
-### Django ###
-*.log
-*.pot
-*.pyc
-__pycache__/
-local_settings.py
-db.sqlite3
-media
+# celery beat schedule file
+celerybeat-schedule
 
+# SageMath parsed files
+*.sage.py
 
-### SublimeText ###
-# cache files for sublime text
-*.tmlanguage.cache
-*.tmPreferences.cache
-*.stTheme.cache
+# Spyder project settings
+.spyderproject
+.spyproject
 
-# workspace files are user-specific
-*.sublime-workspace
+# Rope project settings
+.ropeproject
 
-# project files should be checked into the repository, unless a significant
-# proportion of contributors will probably not be using SublimeText
-*.sublime-project
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
 
-# sftp configuration file
-sftp-config.json
+# mkdocs documentation
+/site
 
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
 
-### Other ###
-.vscode/
+# Pyre type checker
+.pyre/
+
+# End of https://www.gitignore.io/api/python
+
+# OSX files
+.DS_Store
+
+# Yarn cache
+.yarn/
+
+.stan/
