@@ -24,6 +24,9 @@ Install it separately using `pip` or `conda`!
 
 ## Usage
 
+<img width="400" alt="Screenshot of a notebook with Stan highlighting" src="https://github.com/user-attachments/assets/3b59f347-515a-4d30-a1cc-d7de1707c799" />
+
+
 To use the `magic` in your notebook, you need to lead the extension:
 
 ```python
