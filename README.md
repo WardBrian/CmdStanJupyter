@@ -1,6 +1,6 @@
 # cmdstanjupyter
 
-[![Github Actions Status](https://github.com/WardBrian/CmdStanJupyter/workflows/Build/badge.svg)](https://github.com/WardBrian/CmdStanJupyter/actions/workflows/build.yml)
+[![Github Actions Status](https://github.com/WardBrian/CmdStanJupyter/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/WardBrian/CmdStanJupyter/actions/workflows/build.yml)
 
 This extension provides syntax highlighting for Stan code in JupyterLab, as well as a `%%stan` magic command
 to define Stan models in Jupyter notebooks and build them with [CmdStanPy](https://github.com/stan-dev/cmdstanpy).
