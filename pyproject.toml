@@ -54,11 +54,11 @@ ensured-targets = [
 
 [tool.hatch.build.hooks.jupyter-builder.build-kwargs]
 build_cmd = "build:prod"
-npm = ["jlpm"]
+npm = ["yarn"]
 
 [tool.hatch.build.hooks.jupyter-builder.editable-build-kwargs]
 build_cmd = "install:extension"
-npm = ["jlpm"]
+npm = ["yarn"]
 source_dir = "src"
 build_dir = "cmdstanjupyter/labextension"
 
@@ -68,10 +68,10 @@ version_cmd = "hatch version"
 [tool.jupyter-releaser.hooks]
 before-build-npm = [
     "python -m pip install 'jupyterlab>=4.0.0,<5'",
-    "jlpm",
-    "jlpm build:prod"
+    "yarn",
+    "yarn build:prod"
 ]
-before-build-python = ["jlpm clean:all"]
+before-build-python = ["yarn clean:all"]
 
 [tool.check-wheel-contents]
 ignore = ["W002"]
